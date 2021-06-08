@@ -56,3 +56,19 @@ $ npm run start:dev
 ```bash
 $ npm run test
 ```
+
+## API endpoints
+
+Endpoint  | Role
+------------- | -------------
+`POST /auth/signup`  | Create new user
+`POST /auth/signin`  | Login to user
+`GET /auth/me`  | Return current user
+`DELETE /auth/me`  | Delete current user
+`POST /uploads`  | Upload new file
+`GET /uploads`  | Return list of uploads (available filters: search, take, skip)
+`GET /uploads/{UUID}`  | Return upload
+`DELETE /uploads/{UUID}`  | Delete uploaded file
+`GET /uploads/file/{KEY}`  | Return uploaded file
+
+
