@@ -10,13 +10,13 @@ $ npm i
 ```
 ## Config files
 **db.config.env**
-```
+```sh
 POSTGRES_DB=uploader_app
 POSTGRES_USER=dbuser
 POSTGRES_PASSWORD=secret
 ```
 **.env.stage.dev**
-```
+```sh
 DB_HOST=localhost
 DB_PORT=5433 # port inside docker-compose.yml
 DB_USERNAME=dbuser
