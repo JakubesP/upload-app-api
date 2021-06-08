@@ -59,7 +59,7 @@ $ npm run test
 
 ## API endpoints
 
-Endpoint  | Role
+Endpoint  | Description
 ------------- | -------------
 `POST /auth/signup`  | Create new user
 `POST /auth/signin`  | Login to user
