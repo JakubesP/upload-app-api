@@ -28,6 +28,22 @@ AWS_ID=your_aws_id
 AWS_SECRET=your_aws_secret
 AWS_BUCKET_NAME=your_aws_bucket_name
 ```
+
+You need the following S3 bucket permissions:
+
+```
+"Action": [
+    "s3:PutObject",
+    "s3:GetObject",
+    "s3:DeleteObject",
+    "s3:ListBucket"
+],
+"Resource": [
+    "arn:aws:s3:::[bucket_name]/*",
+    "arn:aws:s3:::[bucket_name]"
+]
+```
+
 ## Running the app
 
 ```bash
