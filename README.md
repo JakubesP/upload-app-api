@@ -4,8 +4,8 @@ Simple API created in order to learn Nest.js. The project uses a JWT-based autho
 ## Installation
 
 ```bash
-$ git clone https://github.com/JakubesP/upload-app-api
-$ cd upload-app-api
+$ git clone https://github.com/JakubesP/uploader-app-api
+$ cd uploader-app-api
 $ npm i
 ```
 ## Config files
