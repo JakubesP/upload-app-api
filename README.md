@@ -1,4 +1,4 @@
-# Notebook app API
+# Uploader app API
 Simple API created in order to learn Nest.js. The project uses a JWT-based authorization system and AWS S3 service to store shared files.
 
 ## Installation
