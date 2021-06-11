@@ -33,6 +33,8 @@ export class UploadsService {
     this.bucketS3 = this.configService.get('AWS_BUCKET_NAME');
   }
 
+  // ---------------------------------------------------------------------------------------------
+
   async upload(
     file: File,
     uploadDto: UploadDto,
@@ -72,10 +74,14 @@ export class UploadsService {
     return upload;
   }
 
+  // ---------------------------------------------------------------------------------------------
+
   getFile(file: string, user: User): Promise<internal.Readable> {
     const key = `${user.id}/${file}`;
     return this.awsS3Service.getObject(key, this.bucketS3);
   }
+
+  // ---------------------------------------------------------------------------------------------
 
   getUploads(
     filterDto: GetUploadsFilterDto,
@@ -84,12 +90,16 @@ export class UploadsService {
     return this.uploadRepository.getUploads(filterDto, user);
   }
 
+  // ---------------------------------------------------------------------------------------------
+
   async deleteUpload(id: string, user: User): Promise<void> {
     const upload = await this.getUpload(id, user);
     const key = upload.key;
     await this.awsS3Service.deleteObject(key, this.bucketS3);
     await this.uploadRepository.remove([upload]);
   }
+
+  // ---------------------------------------------------------------------------------------------
 
   async getUpload(id: string, user: User): Promise<Upload> {
     const upload = await this.uploadRepository.findOne({ id, user });

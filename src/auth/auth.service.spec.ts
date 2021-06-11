@@ -50,6 +50,8 @@ const mockSigninDto: SigninDto = {
 
 let mockUser: User;
 
+// ---------------------------------------------------------------------------------------------
+
 describe('AuthService', () => {
   let service: AuthService;
   let repository: any;
@@ -149,6 +151,8 @@ describe('AuthService', () => {
       );
     });
   });
+
+  // ---------------------------------------------------------------------------------------------
 
   describe('deleteCurrentUser', () => {
     it('return-nothing', async () => {

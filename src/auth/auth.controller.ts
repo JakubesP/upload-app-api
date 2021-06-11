@@ -19,21 +19,29 @@ import { User } from './user.entity';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  // ---------------------------------------------------------------------------------------------
+
   @Post('/signup')
   signup(@Body() signupDto: SignupDto): Promise<{ accessToken: string }> {
     return this.authService.signup(signupDto);
   }
+
+  // ---------------------------------------------------------------------------------------------
 
   @Post('/signin')
   signin(@Body() signinDto: SigninDto): Promise<{ accessToken: string }> {
     return this.authService.signin(signinDto);
   }
 
+  // ---------------------------------------------------------------------------------------------
+
   @Get('/me')
   @UseGuards(AuthGuard())
   getMe(@GetUser() me: User): User {
     return me;
   }
+
+  // ---------------------------------------------------------------------------------------------
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/me')
