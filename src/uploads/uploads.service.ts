@@ -77,27 +77,11 @@ export class UploadsService {
 
   // ---------------------------------------------------------------------------------------------
 
-  getFile(file: string, user: User): Promise<internal.Readable> {
-    const key = `${user.id}/${file}`;
-    return this.awsS3Service.getObject(key, this.bucketS3);
-  }
-
-  // ---------------------------------------------------------------------------------------------
-
   getUploads(
     filterDto: GetUploadsFilterDto,
     user: User,
   ): Promise<RecordsList<Upload>> {
     return this.uploadRepository.getUploads(filterDto, user);
-  }
-
-  // ---------------------------------------------------------------------------------------------
-
-  async deleteUpload(id: string, user: User): Promise<void> {
-    const upload = await this.getUpload(id, user);
-    const key = upload.key;
-    await this.awsS3Service.deleteObject(key, this.bucketS3);
-    await this.uploadRepository.remove([upload]);
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -126,5 +110,21 @@ export class UploadsService {
     }
 
     return upload;
+  }
+
+  // ---------------------------------------------------------------------------------------------
+
+  async deleteUpload(id: string, user: User): Promise<void> {
+    const upload = await this.getUpload(id, user);
+    const key = upload.key;
+    await this.awsS3Service.deleteObject(key, this.bucketS3);
+    await this.uploadRepository.remove([upload]);
+  }
+
+  // ---------------------------------------------------------------------------------------------
+
+  getFile(file: string, user: User): Promise<internal.Readable> {
+    const key = `${user.id}/${file}`;
+    return this.awsS3Service.getObject(key, this.bucketS3);
   }
 }

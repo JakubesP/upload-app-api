@@ -63,39 +63,12 @@ export class UploadsController {
 
   // ---------------------------------------------------------------------------------------------
 
-  @Get('file/:file')
-  async getFile(
-    @GetUser() user: User,
-    @Res() res: Response,
-    @Param('file') file: string,
-  ): Promise<void> {
-    const stream = await this.uploadsService.getFile(file, user);
-    stream.on('error', () => {
-      const error = new InternalServerErrorException();
-      res.status(error.getStatus()).json(error.getResponse());
-    });
-    stream.pipe(res);
-  }
-
-  // ---------------------------------------------------------------------------------------------
-
   @Get('/:id')
-  async getUpload(
+  getUpload(
     @Param('id', ParseUUIDPipe) id: string,
     @GetUser() user: User,
   ): Promise<Upload> {
     return this.uploadsService.getUpload(id, user);
-  }
-
-  // ---------------------------------------------------------------------------------------------
-
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete('/:id')
-  async deleteUpload(
-    @Param('id', ParseUUIDPipe) id: string,
-    @GetUser() user: User,
-  ): Promise<void> {
-    return this.uploadsService.deleteUpload(id, user);
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -108,5 +81,32 @@ export class UploadsController {
   ): Promise<Upload> {
     const { label } = updateUploadLabelDto;
     return this.uploadsService.updateUploadLabel(id, label, user);
+  }
+
+  // ---------------------------------------------------------------------------------------------
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('/:id')
+  deleteUpload(
+    @Param('id', ParseUUIDPipe) id: string,
+    @GetUser() user: User,
+  ): Promise<void> {
+    return this.uploadsService.deleteUpload(id, user);
+  }
+
+  // ---------------------------------------------------------------------------------------------
+
+  @Get('file/:file')
+  async getFile(
+    @GetUser() user: User,
+    @Res() res: Response,
+    @Param('file') file: string,
+  ): Promise<void> {
+    const stream = await this.uploadsService.getFile(file, user);
+    stream.on('error', () => {
+      const error = new InternalServerErrorException();
+      res.status(error.getStatus()).json(error.getResponse());
+    });
+    stream.pipe(res);
   }
 }
