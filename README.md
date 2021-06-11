@@ -68,6 +68,7 @@ Endpoint  | Description
 `POST /uploads`  | Upload new file
 `GET /uploads`  | Return list of uploads (available filters: search, take, skip)
 `GET /uploads/{UUID}`  | Return upload
+`PATCH /uploads/{UUID}/label | Update upload label name
 `DELETE /uploads/{UUID}`  | Delete uploaded file
 `GET /uploads/file/{KEY}`  | Return uploaded file
 
