@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AwsS3Service } from '../aws-s3/aws-s3.service';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
-import { CreatedStatus } from '../created-status.enum';
+import { DBSavedStatus } from '../created-status.enum';
 import { AuthService } from './auth.service';
 import { SigninDto } from './dto/signin.dto';
 import { SignupDto } from './dto/signup.dto';
@@ -92,9 +92,9 @@ describe('AuthService', () => {
   // ---------------------------------------------------------------------------------------------
 
   describe('signup', () => {
-    it('return-object-with-accessToken-field__if__UserRepository.createUser-return-CreatedStatus.SUCCESS', async () => {
+    it('return-object-with-accessToken-field__if__UserRepository.createUser-return-DBSavedStatus.SUCCESS', async () => {
       repository.createUser.mockResolvedValue([
-        CreatedStatus.SUCCESS,
+        DBSavedStatus.SUCCESS,
         mockUser,
       ]);
       jwtService.sign.mockReturnValue('[token]');
@@ -103,15 +103,15 @@ describe('AuthService', () => {
       expect(result).toMatchObject({ accessToken: '[token]' });
     });
 
-    it('throw-ConflictException__if__UserRepository.createUser-return-CreatedStatus.CONFLICT', async () => {
-      repository.createUser.mockResolvedValue([CreatedStatus.CONFLICT, null]);
+    it('throw-ConflictException__if__UserRepository.createUser-return-DBSavedStatus.CONFLICT', async () => {
+      repository.createUser.mockResolvedValue([DBSavedStatus.CONFLICT, null]);
       await expect(service.signup(mockSignupDto)).rejects.toThrow(
         ConflictException,
       );
     });
 
-    it('throw-InternalServerErrorException__if__UserRepository.createUser-return-CreatedStatus.ERROR', async () => {
-      repository.createUser.mockResolvedValue([CreatedStatus.ERROR, null]);
+    it('throw-InternalServerErrorException__if__UserRepository.createUser-return-DBSavedStatus.ERROR', async () => {
+      repository.createUser.mockResolvedValue([DBSavedStatus.ERROR, null]);
       await expect(service.signup(mockSignupDto)).rejects.toThrow(
         InternalServerErrorException,
       );

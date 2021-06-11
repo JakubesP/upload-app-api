@@ -9,7 +9,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreatedStatus } from '../created-status.enum';
+import { DBSavedStatus } from '../created-status.enum';
 import { Upload } from './upload.entity';
 import { ServerInfo } from './server-info.interface';
 import { File } from './file.interface';
@@ -23,6 +23,7 @@ const mockUploadRepository = () => ({
   findOne: jest.fn(),
   getUploads: jest.fn(),
   remove: jest.fn(),
+  saveUpload: jest.fn(),
 });
 
 const mockConfigService = () => ({
@@ -101,9 +102,9 @@ describe('UploadsService', () => {
       ).rejects.toThrow(BadRequestException);
     });
 
-    it('return-Upload-instance__if__UploadRepository.createUload-return-CreatedStatus.SUCCESS', async () => {
+    it('return-Upload-instance__if__UploadRepository.createUload-return-DBSavedStatus.SUCCESS', async () => {
       repository.createUpload.mockResolvedValue([
-        CreatedStatus.SUCCESS,
+        DBSavedStatus.SUCCESS,
         mockUpload,
       ]);
       s3Service.uploadObject.mockResolvedValue(undefined);
@@ -116,16 +117,16 @@ describe('UploadsService', () => {
       expect(result).toMatchObject(mockUpload);
     });
 
-    it('throw-ConflictException__if__UploadRepository.createUload-return-CreatedStatus.CONFLICT', async () => {
-      repository.createUpload.mockResolvedValue([CreatedStatus.CONFLICT, null]);
+    it('throw-ConflictException__if__UploadRepository.createUload-return-DBSavedStatus.CONFLICT', async () => {
+      repository.createUpload.mockResolvedValue([DBSavedStatus.CONFLICT, null]);
       s3Service.uploadObject.mockResolvedValue(undefined);
       await expect(
         service.upload(mockFile, mockUploadDto, mockUser, mockRequest),
       ).rejects.toThrow(ConflictException);
     });
 
-    it('throw-InternalServerErrorException__if__UploadRepository.createUload-return-CreatedStatus.ERROR', async () => {
-      repository.createUpload.mockResolvedValue([CreatedStatus.ERROR, null]);
+    it('throw-InternalServerErrorException__if__UploadRepository.createUload-return-DBSavedStatus.ERROR', async () => {
+      repository.createUpload.mockResolvedValue([DBSavedStatus.ERROR, null]);
       s3Service.uploadObject.mockResolvedValue(undefined);
       await expect(
         service.upload(mockFile, mockUploadDto, mockUser, mockRequest),
@@ -185,6 +186,43 @@ describe('UploadsService', () => {
       await expect(service.deleteUpload(mockUuid, mockUser)).rejects.toThrow(
         NotFoundException,
       );
+    });
+  });
+
+  // ---------------------------------------------------------------------------------------------
+
+  describe('updateUploadLabel', () => {
+    it('throw-NotFoundException__if__UploadRepository.findOne-return-null', async () => {
+      repository.findOne.mockResolvedValue(null);
+      await expect(
+        service.updateUploadLabel(mockUuid, '[some label]', mockUser),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('return-Upload-instance__if__UploadRepository.saveUpload-return-DBSavedStatus.SUCCESS', async () => {
+      repository.findOne.mockResolvedValue(mockUpload);
+      repository.saveUpload.mockResolvedValue([
+        DBSavedStatus.SUCCESS,
+        mockUpload,
+      ]);
+      const result = await service.updateUploadLabel(
+        mockUuid,
+        '[some label]',
+        mockUser,
+      );
+
+      const mockReturnUpload: Upload = { ...mockUpload };
+      mockReturnUpload.label = '[some label]';
+
+      expect(result).toMatchObject(mockReturnUpload);
+    });
+
+    it('throw-InternalServerErrorException__if__UploadRepository.saveUpload-return-DBSavedStatus.ERROR', async () => {
+      repository.findOne.mockResolvedValue(mockUpload);
+      repository.saveUpload.mockResolvedValue([DBSavedStatus.ERROR, null]);
+      await expect(
+        service.updateUploadLabel(mockUuid, '[some label]', mockUser),
+      ).rejects.toThrow(InternalServerErrorException);
     });
   });
 });

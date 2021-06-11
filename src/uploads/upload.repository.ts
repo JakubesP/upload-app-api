@@ -1,5 +1,5 @@
 import { User } from '../auth/user.entity';
-import { CreatedStatus } from '../created-status.enum';
+import { DBSavedStatus } from '../created-status.enum';
 import { EntityRepository, Like, Repository } from 'typeorm';
 import { Upload } from './upload.entity';
 import { UploadDto } from './dto/upload.dto';
@@ -8,23 +8,15 @@ import { RecordsList } from '../records-list.interface';
 
 @EntityRepository(Upload)
 export class UploadRepository extends Repository<Upload> {
-  async createUpload(
+  createUpload(
     key: string,
     url: string,
     uploadDto: UploadDto,
     user: User,
-  ): Promise<[CreatedStatus, Upload]> {
+  ): Promise<[DBSavedStatus, Upload]> {
     const { label } = uploadDto;
     const upload = this.create({ url, user, key, label });
-    try {
-      await this.save(upload);
-      return [CreatedStatus.SUCCESS, upload];
-    } catch (error) {
-      if (error.code === '23505') {
-        return [CreatedStatus.CONFLICT, null];
-      }
-      return [CreatedStatus.ERROR, null];
-    }
+    return this.saveUpload(upload);
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -50,5 +42,19 @@ export class UploadRepository extends Repository<Upload> {
       total,
       data: records,
     };
+  }
+
+  // ---------------------------------------------------------------------------------------------
+
+  async saveUpload(upload: Upload): Promise<[DBSavedStatus, Upload]> {
+    try {
+      await this.save(upload);
+      return [DBSavedStatus.SUCCESS, upload];
+    } catch (error) {
+      if (error.code === '23505') {
+        return [DBSavedStatus.CONFLICT, null];
+      }
+      return [DBSavedStatus.ERROR, null];
+    }
   }
 }

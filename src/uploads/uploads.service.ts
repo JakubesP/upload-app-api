@@ -8,7 +8,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../auth/user.entity';
-import { CreatedStatus } from '../created-status.enum';
+import { DBSavedStatus } from '../created-status.enum';
 import { v4 as uuid } from 'uuid';
 import { Upload } from './upload.entity';
 import { UploadRepository } from './upload.repository';
@@ -48,28 +48,29 @@ export class UploadsService {
     const fileExtension = file.originalname.split('.')[1] || '';
     const fileName = `${uuid()}.${fileExtension}`;
     const uploadFileName = `${user.id}/${fileName}`;
-    await this.awsS3Service.uploadObject(
-      file.buffer,
-      this.bucketS3,
-      uploadFileName,
-    );
 
     const fileUrl = `${request.protocol}://${request.host}/uploads/file/${fileName}`;
 
-    const [createdStatus, upload] = await this.uploadRepository.createUpload(
+    const [savedStatus, upload] = await this.uploadRepository.createUpload(
       uploadFileName,
       fileUrl,
       uploadDto,
       user,
     );
 
-    if (createdStatus === CreatedStatus.ERROR) {
+    if (savedStatus === DBSavedStatus.ERROR) {
       throw new InternalServerErrorException();
     }
 
-    if (createdStatus === CreatedStatus.CONFLICT) {
+    if (savedStatus === DBSavedStatus.CONFLICT) {
       throw new ConflictException('Invalid label');
     }
+
+    await this.awsS3Service.uploadObject(
+      file.buffer,
+      this.bucketS3,
+      uploadFileName,
+    );
 
     return upload;
   }
@@ -106,6 +107,24 @@ export class UploadsService {
     if (!upload) {
       throw new NotFoundException();
     }
+    return upload;
+  }
+
+  // ---------------------------------------------------------------------------------------------
+
+  async updateUploadLabel(
+    id: string,
+    label: string,
+    user: User,
+  ): Promise<Upload> {
+    const upload = await this.getUpload(id, user);
+    upload.label = label;
+    const [savedStatus] = await this.uploadRepository.saveUpload(upload);
+
+    if (savedStatus !== DBSavedStatus.SUCCESS) {
+      throw new InternalServerErrorException();
+    }
+
     return upload;
   }
 }

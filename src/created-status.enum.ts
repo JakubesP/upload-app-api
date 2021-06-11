@@ -1,4 +1,4 @@
-export enum CreatedStatus {
+export enum DBSavedStatus {
   SUCCESS = 'SUCCESS',
   CONFLICT = 'CONFLICT',
   ERROR = 'ERROR',

@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt';
 import { SigninDto } from './dto/signin.dto';
-import { CreatedStatus } from '../created-status.enum';
+import { DBSavedStatus } from '../created-status.enum';
 import { SignupDto } from './dto/signup.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt-payload.interface';
@@ -33,16 +33,16 @@ export class AuthService {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const [createdStatus, user] = await this.userRepository.createUser(
+    const [savedStatus, user] = await this.userRepository.createUser(
       email,
       hashedPassword,
     );
 
-    if (createdStatus === CreatedStatus.ERROR) {
+    if (savedStatus === DBSavedStatus.ERROR) {
       throw new InternalServerErrorException();
     }
 
-    if (createdStatus === CreatedStatus.CONFLICT) {
+    if (savedStatus === DBSavedStatus.CONFLICT) {
       throw new ConflictException('Invalid email');
     }
 

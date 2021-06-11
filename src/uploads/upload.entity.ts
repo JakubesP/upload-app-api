@@ -14,7 +14,7 @@ export class Upload {
   @Column({ unique: true })
   url: string;
 
-  @Column({ unique: true })
+  @Column()
   label: string;
 
   @ManyToOne(() => User, (user) => user.uploads, {

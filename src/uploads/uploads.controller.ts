@@ -8,6 +8,7 @@ import {
   InternalServerErrorException,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Query,
   Req,
@@ -27,6 +28,7 @@ import { File } from './file.interface';
 import { UploadDto } from './dto/upload.dto';
 import { GetUploadsFilterDto } from './dto/get-uploads-filter.dto';
 import { RecordsList } from '../records-list.interface';
+import { UpdateUploadLabelDto } from './dto/update-upload-label.dto';
 
 @UseGuards(AuthGuard())
 @Controller('uploads')
@@ -94,5 +96,17 @@ export class UploadsController {
     @GetUser() user: User,
   ): Promise<void> {
     return this.uploadsService.deleteUpload(id, user);
+  }
+
+  // ---------------------------------------------------------------------------------------------
+
+  @Patch('/:id/label')
+  updateUploadLabel(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateUploadLabelDto: UpdateUploadLabelDto,
+    @GetUser() user: User,
+  ): Promise<Upload> {
+    const { label } = updateUploadLabelDto;
+    return this.uploadsService.updateUploadLabel(id, label, user);
   }
 }
